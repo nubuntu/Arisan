@@ -111,12 +111,8 @@ var childwindow;
 		function facebookLocChanged(loc){
 		//childwindow.close();
 		if (/login_success/.test(loc.url)) { 
-		   //var fbCode = loc.url.match(/code=(.*)$/)[1];
-		   var id_check = /access_token=([^&]+)/i;
-		   var fbToken = id_check.exec(loc.url);
-			//console.log(loc.url);
-		   console.log("FBToken:" + fbToken[1]);
-			//childwindow.close();
+		   var res = getObjUrl(loc.url);
+			childwindow.close();
 		}}	
 		function ajaxthis(url){
 			$.ajax({
@@ -126,6 +122,13 @@ var childwindow;
 		    		console.log(data);
 		        }
 		     });				
+		}
+		function getObjUrl(url){
+			url = url.replace("#","?");
+			console.log(url);
+			url = url.split('?')[1];
+			console.log(url);			
+			return $.parseJSON('{"' + decodeURI(url.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}');			
 		}
 </script>
 
