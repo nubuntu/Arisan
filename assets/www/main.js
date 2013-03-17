@@ -1,35 +1,31 @@
-(function($) {
-	$.widget("mobile.arisan", $.mobile.widget, {  
-		options: {
-			title:'Arisan',
-			url:'http://arisan.noercholis.com'
-		},
+var Arisan={
+		_title:'Arisan nnnn',
+		_url:'http://arisan.noercholis.com',
+		_$main:null,
 		_$title:null,
 		_$header:null,
 		_$content:null,
 		_$footer:null,
 		_$button:{},
-		_create:function() {  
-			this._createHeader();
-			this._creatTitle();
-			this._createContent();
-			this._createFooter();
-			alert('created');
+		getObj:function(data){
+			var self = this;
+			$.each(data,function(key,value){
+				self['_' + key]=value;
+				console.log(self['_' + key]);
+			});
+			self._$header = self._$main.children("#header");
+			self._$content = self._$main.children("#content");
+			self._$footer = self._$main.children("#footer");
+			self._$title = self._$header.children('h1');
+			self._$title.html(self._title);
+			console.log(self._title);
+			return self;
 		},
-		destroy:function() {             
-		},  		
-		_setOption:function(option, value) {  
-		    $.Widget.prototype._setOption.apply( this, arguments );  
-		  
+		setTitle:function(title){
+			
 		},
-		_createHeader:function(){
-            this._$header = $('<div />')
-            .attr('data-role','content')
-            .attr('data-position','fixed')
-            .appendTo(this.element);		
-		},
-		_creatTitle:function(){
-			this._$title = $('<h1>' + this.options.title + '</h1>').appendTo(this._$header);
+		getTitle:function(){
+			return this._title;
 		},
 		_createButton:function(param){
 			if(this._$button[param.name]){
@@ -43,17 +39,6 @@
 			.html(param.caption)
 			.appendTo(this._$header);			
 		},
-		_createContent:function(){
-            this._$content = $('<div />')
-            .attr('data-role','content')
-            .appendTo(this.element);		
-		},
-		_createFooter:function(){
-            this._$footer = $('<div />')
-            .attr('data-role','footer')
-            .attr('data-position','fixed')
-            .appendTo(this.element);		
-		},		
 		_getObjUrl:function(url){
 			url = url.replace("#","?");
 			console.log(url);
@@ -72,5 +57,4 @@
 			}
 			return vars;
 		}		
-	}); 
-})(jQuery);
+};
