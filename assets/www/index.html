@@ -13,14 +13,8 @@
     </head>
     <body>
 <div data-role="page" id="main" data-theme="b">
-	<div data-role='header' id='header' data-position='fixed'>
-		<h1>Arisan</h1>
-	</div>
-	<div data-role='content' id='content'>
-	</div>	
-	<div data-role='footer' data-position='fixed' id='footer'>
-	</div>				
 </div>
+<script src="md5.js"></script>	
 <script src="main.js"></script>	
 <script>
 document.addEventListener("deviceready", onDeviceReady, false);
@@ -28,20 +22,11 @@ var my_client_id  = "426883230735517";
 var my_redirect_uri   = "http://www.facebook.com/connect/login_success.html";
 var my_type           = "user_agent";
 var my_display        = "touch";
-var app = new Arisan.getObj({
+var app = Arisan.getObj({
 	$main:$('#main')
 });
 function onDeviceReady() {
-	alert("ready bos...");
-	alert(app.getTitle());
-	/**
-    element.html('Device Name: '     + device.name     + '<br />' + 
-                        'Device PhoneGap: ' + device.phonegap + '<br />' + 
-                        'Device Platform: ' + device.platform + '<br />' + 
-                        'Device UUID: '     + device.uuid     + '<br />' + 
-                        'Device Version: '  + device.version  + '<br />');
-	**/
-	//document.addEventListener("backbutton", onBackClickEvent, false); // Adding the back button listener    
+	app.setDevice(device);
 }
 var childwindow;
 	function init(){

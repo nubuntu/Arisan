@@ -1,6 +1,7 @@
 var Arisan={
-		_title:'Arisan nnnn',
-		_url:'http://arisan.noercholis.com',
+		_title:'Arisan',
+		_url:'http://202.148.28.10/arisan/main.php',
+		_device:null,
 		_$main:null,
 		_$title:null,
 		_$header:null,
@@ -11,21 +12,66 @@ var Arisan={
 			var self = this;
 			$.each(data,function(key,value){
 				self['_' + key]=value;
-				console.log(self['_' + key]);
 			});
-			self._$header = self._$main.children("#header");
-			self._$content = self._$main.children("#content");
-			self._$footer = self._$main.children("#footer");
-			self._$title = self._$header.children('h1');
-			self._$title.html(self._title);
-			console.log(self._title);
-			return self;
+			this._createHeader();
+			this._createTitle();
+			this._createContent();
+			this._createFooter();
+			this._$title.html(this._title);
+			return this;
+		},
+		_createHeader:function(){
+			this._$header = $('<div />')
+			.attr('data-role','header')
+			.attr('data-position','fixed')
+			.appendTo(this._$main);			
+		},
+		_createTitle:function(){
+			this._$title = $('<h1 />').appendTo(this._$header);
+		},
+		_createContent:function(){
+			this._$content = $('<div />')
+			.attr('data-role','content')
+			.appendTo(this._$main);			
+		},
+		_createFooter:function(){
+			this._$footer = $('<div />')
+			.attr('data-role','footer')
+			.attr('data-position','fixed')
+			.appendTo(this._$main);
 		},
 		setTitle:function(title){
 			
 		},
 		getTitle:function(){
 			return this._title;
+		},
+		setDevice:function(d){
+			this._device = d;
+			this._isSession();
+		},
+		_isSession:function(){
+			param={
+				cmd:'ceksession',
+				uuid:md5(this._device.uuid)
+			};
+			var res = this._api(param);
+			alert(res.msg);
+		},
+		_api:function(param){
+			var self = this;
+			var res = {};
+			$.ajax({
+				  type: "POST",
+				  url:self._url,
+				  dataType:'json',
+				  data:param
+				}).done(function( respon ) {
+					console.log(respon.msg);
+					res = respon;
+				}
+			);			
+			return res;
 		},
 		_createButton:function(param){
 			if(this._$button[param.name]){
