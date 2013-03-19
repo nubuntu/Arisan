@@ -56,18 +56,19 @@ var Arisan={
 				uuid:md5(this._device.uuid)
 			};
 			var res = this._api(param);
-			alert(res.msg);
+			console.log(res.stat);
+			return res.stat;
 		},
 		_api:function(param){
 			var self = this;
-			var res = {};
+			var res;
 			$.ajax({
 				  type: "POST",
 				  url:self._url,
 				  dataType:'json',
+				  async: false,
 				  data:param
 				}).done(function( respon ) {
-					console.log(respon.msg);
 					res = respon;
 				}
 			);			
