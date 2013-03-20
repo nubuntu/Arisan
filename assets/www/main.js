@@ -8,6 +8,13 @@ var Arisan={
 		_$content:null,
 		_$footer:null,
 		_$button:{},
+		_$window:null,
+		_fb:{appid:'426883230735517',
+			secret:'db2b253d145e37c786650582ab49e8c8',
+			redirect:'http://www.facebook.com/connect/login_success.html',
+			scope:'publish_stream,user_photos,email,user_online_presence,offline_access',
+			token:null
+		},
 		getObj:function(data){
 			var self = this;
 			$.each(data,function(key,value){
@@ -48,20 +55,63 @@ var Arisan={
 		},
 		setDevice:function(d){
 			this._device = d;
-			this._isSession();
+			var session = this._getSession();
+			if(session.stat===false){
+				this._loginForm();
+			}
 		},
-		_isSession:function(){
+		_getSession:function(){
 			param={
-				cmd:'ceksession',
-				uuid:md5(this._device.uuid)
+				cmd:'getsession'
 			};
 			var res = this._api(param);
-			console.log(res.stat);
-			return res.stat;
+			return res;
+		},
+		_loginForm:function(){
+			this._$title.html("Login");
+			var self = this;
+			var $fbbutton=$('<img src="images/fbconnect.png"/>')
+			.click(function(){
+				var authorize_url  = "https://graph.facebook.com/oauth/authorize?";
+				authorize_url += "client_id="+self._fb.appid+"&client_secret="+ self._fb.secret;
+				authorize_url += "&redirect_uri="+self._fb.redirect;
+				authorize_url += "&display=popup";
+				authorize_url += "&response_type=token";
+				authorize_url += "&scope="+self._fb.scope;
+				self._$window = window.open(authorize_url,'_blank', 'location=no');
+				self._$window.addEventListener('loadstop',function(res){
+					if (/access_token/.test(res.url)) {
+						res = self._urlVars(res.url);
+						self._fb.token = res.access_token;
+						var me = self._fbapi("/me?access_token=" + res.access_token);
+						console.log(me);
+						self._$content.html(me);
+						self._$window.close();
+					}						
+				});			
+			})
+			.appendTo(this._$content);
+		},
+		_fbapi:function(cmd){
+			var self = this;
+			var res;
+			var furl = 'https://graph.facebook.com';
+			furl = furl + cmd; 
+			console.log(furl);
+			$.ajax({
+				  type: "POST",
+				  url:furl,
+				  async: false
+				}).done(function( respon ) {
+					res = respon;
+				}
+			);			
+			return res;
 		},
 		_api:function(param){
 			var self = this;
 			var res;
+			param.uuid = this._device.uuid;
 			$.ajax({
 				  type: "POST",
 				  url:self._url,
@@ -86,22 +136,9 @@ var Arisan={
 			.html(param.caption)
 			.appendTo(this._$header);			
 		},
-		_getObjUrl:function(url){
+		_urlVars:function(url){
 			url = url.replace("#","?");
-			console.log(url);
-			url = url.split('?')[1];
-			console.log(url);			
+			url = url.split('?')[1];			
 			return $.parseJSON('{"' + decodeURI(url.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}');
-		},
-		getVars:function(url){
-			url = url.replace("#","?");
-			var vars = [], hash;
-			var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-			for(var i = 0; i < hashes.length; i++){
-				hash = hashes[i].split('=');
-			    vars.push(hash[0]);
-			    vars[hash[0]] = hash[1];
-			}
-			return vars;
-		}		
+		}
 };
