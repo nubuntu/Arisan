@@ -72,47 +72,27 @@ var Arisan={
 			var self = this;
 			var $fbbutton=$('<img src="images/fbconnect.png"/>')
 			.click(function(){
-				var authorize_url  = "https://graph.facebook.com/oauth/authorize?";
-				authorize_url += "client_id="+self._fb.appid;
-				authorize_url += "&redirect_uri="+self._fb.redirect;
-				authorize_url += "&display=popup";
-				authorize_url += "&response_type=token";
-				authorize_url += "&scope="+self._fb.scope;
-				self._$window = window.open(authorize_url,'_blank', 'location=no');
+				var url = self._url + '?cmd=fblogin';
+				self._$window = window.open(url,'_blank', 'location=no');
 				self._$window.addEventListener('loadstop',function(res){
-					if (/access_token/.test(res.url)) {
-						res = self._urlVars(res.url);
-						self._fb.token = res.access_token;
-						var me = self._fbapi("/me?access_token=" + res.access_token);
-						console.log(me);
-						self._$content.html(me);
+					console.log(res.url);
+					if (/&access_token/.test(res.url)) {
+						var param={
+								cmd:'fbme'
+						};
+						var me = self._api(param);
+						self._$content.html(JSON.stringify(me));
 						self._$window.close();
 					}						
 				});			
 			})
 			.appendTo(this._$content);
 		},
-		_fbapi:function(cmd){
-			var self = this;
-			var res;
-			var furl = 'https://graph.facebook.com';
-			furl = furl + cmd; 
-			console.log(furl);
-			$.ajax({
-				  url:furl,
-				  async: false
-				}).done(function( respon ) {
-					res = respon;
-				}
-			);			
-			return res;
-		},
 		_api:function(param){
 			var self = this;
 			var res;
 			param.uuid = this._device.uuid;
 			$.ajax({
-				  type: "POST",
 				  url:self._url,
 				  dataType:'json',
 				  async: false,
