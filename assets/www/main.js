@@ -73,7 +73,7 @@ var Arisan={
 			var $fbbutton=$('<img src="images/fbconnect.png"/>')
 			.click(function(){
 				var authorize_url  = "https://graph.facebook.com/oauth/authorize?";
-				authorize_url += "client_id="+self._fb.appid+"&client_secret="+ self._fb.secret;
+				authorize_url += "client_id="+self._fb.appid;
 				authorize_url += "&redirect_uri="+self._fb.redirect;
 				authorize_url += "&display=popup";
 				authorize_url += "&response_type=token";
@@ -99,7 +99,6 @@ var Arisan={
 			furl = furl + cmd; 
 			console.log(furl);
 			$.ajax({
-				  type: "POST",
 				  url:furl,
 				  async: false
 				}).done(function( respon ) {
