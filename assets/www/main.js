@@ -9,6 +9,8 @@ var Arisan={
 		_$footer:null,
 		_$button:{},
 		_$window:null,
+		_$buttonleft=null,
+		_$buttonright=null,
 		_fb:{appid:'426883230735517',
 			secret:'db2b253d145e37c786650582ab49e8c8',
 			redirect:'http://www.facebook.com/connect/login_success.html',
@@ -23,7 +25,9 @@ var Arisan={
 				self['_' + key]=value;
 			});
 			this._createHeader();
+			this._$buttonleft = $('<a data-role="button" class="ui-btn-left" data-icon="arrow-l" data-iconpos="left">Previous</a>').appenTo(this._$header);			
 			this._createTitle(this._title);
+			this._$buttonright = $('<a data-role="button" class="ui-btn-right" data-icon="arrow-r" data-iconpos="left">Next</a>').appenTo(this._$header);			
 			this._createContent();
 			this._createFooter();
 			return this;
