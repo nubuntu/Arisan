@@ -16,15 +16,16 @@ var Arisan={
 			token:null
 		},
 		getObj:function(data){
+			$.support.cors = true;
+			$.mobile.allowCrossDomainPages = true;
 			var self = this;
 			$.each(data,function(key,value){
 				self['_' + key]=value;
 			});
 			this._createHeader();
-			this._createTitle();
+			this._createTitle(this._title);
 			this._createContent();
 			this._createFooter();
-			this._$title.html(this._title);
 			return this;
 		},
 		_createHeader:function(){
@@ -33,8 +34,8 @@ var Arisan={
 			.attr('data-position','fixed')
 			.appendTo(this._$main);			
 		},
-		_createTitle:function(){
-			this._$title = $('<h1 />').appendTo(this._$header);
+		_createTitle:function(title){
+			this._$title = $('<h1>' + title + '</h1>').appendTo(this._$header);
 		},
 		_createContent:function(){
 			this._$content = $('<div />')
@@ -46,9 +47,6 @@ var Arisan={
 			.attr('data-role','footer')
 			.attr('data-position','fixed')
 			.appendTo(this._$main);
-		},
-		setTitle:function(title){
-			
 		},
 		getTitle:function(){
 			return this._title;
@@ -67,26 +65,49 @@ var Arisan={
 			var res = this._api(param);
 			return res;
 		},
+		_clear:function(){
+			//this._$header.html("");
+			this._$content.html("");
+			this._$footer.html("");
+			
+		},
 		_loginForm:function(){
-			this._$title.html("Login");
+			this._$title.html('Login');
 			var self = this;
 			var $fbbutton=$('<img src="images/fbconnect.png"/>')
 			.click(function(){
-				var url = self._url + '?cmd=fblogin';
-				self._$window = window.open(url,'_blank', 'location=no');
+				var authorize_url  = "https://graph.facebook.com/oauth/authorize?";
+				authorize_url += "client_id="+self._fb.appid;
+				authorize_url += "&redirect_uri="+self._fb.redirect;
+				authorize_url += "&display=popup";
+				authorize_url += "&response_type=token";
+				authorize_url += "&scope="+self._fb.scope;
+				self._$window = window.open(authorize_url,'_blank', 'location=no');
 				self._$window.addEventListener('loadstop',function(res){
-					console.log(res.url);
-					if (/&access_token/.test(res.url)) {
-						var param={
-								cmd:'fbme'
-						};
-						var me = self._api(param);
-						self._$content.html(JSON.stringify(me));
+					if (/access_token/.test(res.url)) {
+						self._accountForm(res);
 						self._$window.close();
 					}						
 				});			
 			})
 			.appendTo(this._$content);
+		},
+		_accountForm:function(res){
+			this._clear();
+			var self = this;
+			res = self._urlVars(res.url);
+			self._fb.token = res.access_token;
+			var param = {cmd:'fbme',token:res.access_token}
+			var me = self._api(param);
+			var $prev = $('<a data-role="button" class="ui-btn-left" data-icon="arrow-l" data-iconpos="left">Previous</a>')
+			.click(function(){
+				self._loginForm();
+			})
+			.appendTo(this._$header);
+			this._$title.html('Facebook');
+			var $next = $('<a data-role="button" class="ui-btn-right" data-icon="arrow-r" data-iconpos="right">Next</a>')
+			.appendTo(this._$header);
+			this._$content.html(JSON.stringify(me));			
 		},
 		_api:function(param){
 			var self = this;

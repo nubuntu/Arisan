@@ -17,88 +17,15 @@
 <script src="md5.js"></script>	
 <script src="main.js"></script>	
 <script>
+
 document.addEventListener("deviceready", onDeviceReady, false);
-var my_client_id  = "426883230735517";
-var my_redirect_uri   = "http://www.facebook.com/connect/login_success.html";
-var my_type           = "user_agent";
-var my_display        = "touch";
 var app = Arisan.getObj({
 	$main:$('#main')
 });
+
 function onDeviceReady() {
 	app.setDevice(device);
 }
-var childwindow;
-	function init(){
-		hide("Main");
-		navigator.splashscreen.hide();
-		show("Login");
-	}
-	function fadein(el,$func){
-		$("#hdr" + el).fadeIn('slow',$func);  	
-		$("#content" + el).fadeIn('slow',$func);  	
-		$("#ftr" + el).fadeIn('slow',$func);  		
-	} 	
-	function fadeout(el,$func){
-		$("#hdr" + el).fadeOut('slow',$func);  	
-		$("#content" + el).fadeOut('slow',$func);  	
-		$("#ftr" + el).fadeOut('slow',$func);  		
-	} 	
-	function show(el){
-		$("#hdr" + el).show();  	
-		$("#content" + el).show();  	
-		$("#ftr" + el).show();
-		contentHeight(el);
-	}
-	function hide(el){
-		$("#hdr" + el).hide();  	
-		$("#content" + el).hide();  	
-		$("#ftr" + el).hide();  	
-	}	
-	function contentHeight(el){
-	    var header = $("#hdr" + el);
-	    var footer = $("#ftr" + el);
-	    var content = $("#content" + el);
-	    var viewport_height = $(window).height();		
-		var content_height = viewport_height - header.outerHeight() - footer.outerHeight();
-		content_height -= (content.outerHeight() - content.height());
-		content.height(content_height);
-	}
-	function onPubFacebookBtn(){ // I call this from a button
-
-		var authorize_url  = "https://graph.facebook.com/oauth/authorize?";
-		authorize_url += "client_id="+my_client_id;
-		authorize_url += "&redirect_uri="+my_redirect_uri;
-		authorize_url += "&display="+my_display;
-		authorize_url += "&response_type=token";
-		authorize_url += "&scope=publish_stream,user_photos,email,user_online_presence,offline_access";
-		//console.log("url_auth:" + authorize_url);
-		childwindow = window.open(authorize_url,'_blank', 'location=yes');
-        childwindow.addEventListener('loadstop',facebookLocChanged);
-		}
-
-		function facebookLocChanged(loc){
-		//childwindow.close();
-		if (/login_success/.test(loc.url)) { 
-		   var res = getObjUrl(loc.url);
-			childwindow.close();
-		}}	
-		function ajaxthis(url){
-			$.ajax({
-		        url:url, 
-		        type: 'POST',
-		        success: function(data) {
-		    		console.log(data);
-		        }
-		     });				
-		}
-		function getObjUrl(url){
-			url = url.replace("#","?");
-			console.log(url);
-			url = url.split('?')[1];
-			console.log(url);			
-			return $.parseJSON('{"' + decodeURI(url.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}');			
-		}
 </script>			
 </body>
 </html>
