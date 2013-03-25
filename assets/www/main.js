@@ -9,8 +9,8 @@ var Arisan={
 		_$footer:null,
 		_$button:{},
 		_$window:null,
-		_$buttonleft=null,
-		_$buttonright=null,
+		_$buttonleft:null,
+		_$buttonright:null,
 		_fb:{appid:'426883230735517',
 			secret:'db2b253d145e37c786650582ab49e8c8',
 			redirect:'http://www.facebook.com/connect/login_success.html',
@@ -25,9 +25,9 @@ var Arisan={
 				self['_' + key]=value;
 			});
 			this._createHeader();
-			this._$buttonleft = $('<a data-role="button" class="ui-btn-left" data-icon="arrow-l" data-iconpos="left">Previous</a>').appenTo(this._$header);			
+			this._$buttonleft = $('<a data-role="button" class="ui-btn-left" data-icon="arrow-l" data-iconpos="left">Prev</a>').appendTo(this._$header);			
 			this._createTitle(this._title);
-			this._$buttonright = $('<a data-role="button" class="ui-btn-right" data-icon="arrow-r" data-iconpos="left">Next</a>').appenTo(this._$header);			
+			this._$buttonright = $('<a data-role="button" class="ui-btn-right" data-icon="arrow-r" data-iconpos="left">Next</a>').appendTo(this._$header);			
 			this._createContent();
 			this._createFooter();
 			return this;
@@ -93,8 +93,8 @@ var Arisan={
 						self._$window.close();
 					}						
 				});			
-			})
-			.appendTo(this._$content);
+			});
+			this._$content.html($fbbutton);
 		},
 		_accountForm:function(res){
 			this._clear();
@@ -103,14 +103,10 @@ var Arisan={
 			self._fb.token = res.access_token;
 			var param = {cmd:'fbme',token:res.access_token}
 			var me = self._api(param);
-			var $prev = $('<a data-role="button" class="ui-btn-left" data-icon="arrow-l" data-iconpos="left">Previous</a>')
-			.click(function(){
+			this._$buttonleft.click(function(){
 				self._loginForm();
-			})
-			.appendTo(this._$header);
+			});
 			this._$title.html('Facebook');
-			var $next = $('<a data-role="button" class="ui-btn-right" data-icon="arrow-r" data-iconpos="right">Next</a>')
-			.appendTo(this._$header);
 			this._$content.html(JSON.stringify(me));			
 		},
 		_api:function(param){
