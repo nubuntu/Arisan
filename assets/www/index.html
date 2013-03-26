@@ -25,6 +25,7 @@ var app = Arisan.getObj({
 
 function onDeviceReady() {
 	app.setDevice(device);
+	document.addEventListener("backbutton", app.backbutton, false);	
 }
 </script>			
 </body>

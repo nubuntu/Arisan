@@ -11,12 +11,14 @@ var Arisan={
 		_$window:null,
 		_$buttonleft:null,
 		_$buttonright:null,
+		page:null,
 		_fb:{appid:'426883230735517',
 			secret:'db2b253d145e37c786650582ab49e8c8',
 			redirect:'http://www.facebook.com/connect/login_success.html',
 			scope:'publish_stream,user_photos,email,user_online_presence,offline_access',
 			token:null
 		},
+		_profile:{},
 		getObj:function(data){
 			$.support.cors = true;
 			$.mobile.allowCrossDomainPages = true;
@@ -62,6 +64,9 @@ var Arisan={
 				this._loginForm();
 			}
 		},
+		backbutton:function(event){
+		    this.page();
+		},
 		_getSession:function(){
 			param={
 				cmd:'getsession'
@@ -76,9 +81,12 @@ var Arisan={
 			
 		},
 		_loginForm:function(){
+			this._$buttonleft.hide();
+			this._$buttonright.hide();
 			this._$title.html('Login');
+			this._clear();
 			var self = this;
-			var $fbbutton=$('<img src="images/fbconnect.png"/>')
+			var $fbbutton=$('<img src="images/fbconnect.png" align="center"/>')
 			.click(function(){
 				var authorize_url  = "https://graph.facebook.com/oauth/authorize?";
 				authorize_url += "client_id="+self._fb.appid;
@@ -89,14 +97,20 @@ var Arisan={
 				self._$window = window.open(authorize_url,'_blank', 'location=no');
 				self._$window.addEventListener('loadstop',function(res){
 					if (/access_token/.test(res.url)) {
-						self._accountForm(res);
 						self._$window.close();
+						//self._fbForm(res);
+						self.loadPage(this._loginForm,this._fbForm,res)
 					}						
 				});			
 			});
 			this._$content.html($fbbutton);
 		},
-		_accountForm:function(res){
+		loadPage:function(prev,next){
+			this.page = prev;
+			next(arguments[2]);
+		},
+		_fbForm:function(res){
+			this._$buttonleft.show();
 			this._clear();
 			var self = this;
 			res = self._urlVars(res.url);
@@ -107,7 +121,8 @@ var Arisan={
 				self._loginForm();
 			});
 			this._$title.html('Facebook');
-			this._$content.html(JSON.stringify(me));			
+			var $pic = $('<img src="' + me.img +'" align="center"/>')
+				.appendTo(this._$content);
 		},
 		_api:function(param){
 			var self = this;
